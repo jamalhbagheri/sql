@@ -54,7 +54,13 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 **HINT:** search type 1 vs type 2 slowly changing dimensions. 
 
 ```
-Your answer...
+Your answer... Type 1 vs Type 2 depends on what the business needs.
+Type 1 means we overwrite the customer’s address and only keep the current one. It’s simple and fast, but we lose history, so we can’t answer questions like “what address did we use last year?”
+Type 2 means we keep history by adding a new record each time the address changes (with dates/flags to mark what’s current). It’s a bit more work, but we can report “address as of a date,” handle audits/returns properly, and analyze moves over time. It might be slower than type 1 and needs to store more data.
+
+A customer can also have multiple addresses at once (e.g., Billing vs Shipping). With Type 1, we only keep the latest for each address type; with Type 2, we keep all versions over time and still know which one is current.
+
+My take for a small bookstore: if we care about accurate shipping/billing history (returns, disputes, compliance), I’d use Type 2. If we only need the latest contact location for simple marketing, Type 1 is enough.
 ```
 
 ***
