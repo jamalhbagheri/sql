@@ -54,7 +54,48 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 **HINT:** search type 1 vs type 2 slowly changing dimensions. 
 
 ```
-Your answer... Type 1 vs Type 2 depends on what the business needs.
+Your answer... 
+
+Architecture 1 for Type 1 SCD (Overwrits and keeps only the current address)
+
+Purpose: simplest operational design; no history.
+Table: customer_address (one row per customer per address)
+Key idea: when an address changes, we update in place.
+
+Typical columns
+
+customer_id (links to Customer)
+
+address_line1, address_line2, city, province, postal_code, country
+
+updated_at (last time the address was changed)
+
+
+ERD: Customer table has 1 to 1 relationship with Customer_Address.
+
+Architecture 2 — Type 2 SCD (Retain history: add every change)
+
+Purpose: auditability and reporting with full history.
+Table: customer_address (one row per new address)
+Key idea: when an address changes, we insert a new row and mark the old row as historical.
+
+Typical columns:
+
+customer_address_id 
+
+customer_id
+
+address_line1, address_line2, city, province, postal_code, country
+
+address_added_date (date this address became valid)
+
+effective_changed_date (when the customer address changed to mew address)
+
+is_current (flag to quickly find the active version)
+
+ERD: Customer table has 1 to many relationship with Customer_Address table (many addresses over time).
+
+Type 1 vs Type 2 depends on what the business needs.
 Type 1 means we overwrite the customer’s address and only keep the current one. It’s simple and fast, but we lose history, so we can’t answer questions like “what address did we use last year?”
 Type 2 means we keep history by adding a new record each time the address changes (with dates/flags to mark what’s current). It’s a bit more work, but we can report “address as of a date,” handle audits/returns properly, and analyze moves over time. It might be slower than type 1 and needs to store more data.
 
